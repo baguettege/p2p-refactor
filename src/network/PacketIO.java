@@ -3,7 +3,6 @@ package network;
 import network.packets.Packet;
 import network.packets.PacketFactory;
 import security.EncryptionManager;
-import security.PacketSerializer;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.io.DataInputStream;

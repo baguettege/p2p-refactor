@@ -1,4 +1,4 @@
-package security;
+package network;
 
 import network.packets.Packet;
 import network.packets.PacketFactory;
