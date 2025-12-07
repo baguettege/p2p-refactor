@@ -15,6 +15,8 @@ public class FileManager {
     private static final Path trustedKeysDir = keyDir.resolve("trusted-keys");
     private static final Path logFile = mainDir.resolve("latest.log");
 
+    public static String getMainDir() {return mainDir.toString();}
+
     public static void init() {
         try {
             List<Path> dirs = List.of(

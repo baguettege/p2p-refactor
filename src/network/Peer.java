@@ -63,6 +63,20 @@ public class Peer implements Runnable {
 
     @Override
     public void run() { // listen for packets
+
+        // wait for handshake timeout
+        new Thread(() -> {
+            try {
+                Thread.sleep(securityManager.getHandshakeTimeout());
+                if (!securityManager.isHandshakeCompleted()) {
+                    disconnect("Handshake timeout");
+                }
+
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+
         while (true) {
             try {
                 Packet packet;

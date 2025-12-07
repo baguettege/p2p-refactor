@@ -11,6 +11,7 @@ import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SecurityManager {
     private final Peer peer;
@@ -161,5 +162,11 @@ public class SecurityManager {
                 - Key exchange: FFDHE4096
                 - ID key algorithm: Ed25519
                 """);
+        handshakeCompleted.set(true);
     }
+
+    private final AtomicBoolean handshakeCompleted = new AtomicBoolean(false);
+    public boolean isHandshakeCompleted() {return handshakeCompleted.get();}
+    private final int HANDSHAKE_TIMEOUT_MILLIS = 10000;
+    public int getHandshakeTimeout() {return HANDSHAKE_TIMEOUT_MILLIS;}
 }

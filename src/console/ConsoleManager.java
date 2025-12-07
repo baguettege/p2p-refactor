@@ -1,5 +1,6 @@
 package console;
 
+import files.FileManager;
 import network.Peer;
 
 import javax.swing.*;
@@ -55,11 +56,15 @@ public class ConsoleManager {
         Console newConsole = new Console(components.inputField, components.outputArea);
         activeConsolePanels.put(newConsole, components.panel);
 
-        newConsole.log("Console startup | Master\n'cmd' for available commands\nTo ensure confidentiality, never share your private.key file");
+        newConsole.log(
+                "Console startup | Master\n" +
+                "'cmd' for available commands\n" +
+                "Saved data directory: " + FileManager.getMainDir()
+        );
         return newConsole;
     }
 
-    public static Console createPeerConsole(String name, Peer peer) { // todo: add Peer class param later
+    public static Console createPeerConsole(String name, Peer peer) {
         Supplier<Console> supplier = () -> {
             ConsoleComponents components = createConsoleComponents();
             tabs.add(name, components.panel);
@@ -93,11 +98,13 @@ public class ConsoleManager {
         inputField.setFont(new Font("Monospaced", Font.PLAIN, 14));
         inputField.setForeground(Color.WHITE);
         inputField.setBackground(new Color(43, 44, 48));
+        inputField.setCaretColor(Color.WHITE);
 
         outputArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
         outputArea.setForeground(Color.WHITE);
         outputArea.setBackground(new Color(30, 31, 35));
         outputArea.setEditable(false);
+        outputArea.setCaretColor(Color.WHITE);
 
         panel.add(scroll, BorderLayout.CENTER);
         panel.add(inputField, BorderLayout.SOUTH);
