@@ -1,30 +1,31 @@
 package network.packets;
 
 import network.PacketDispatcher;
+import network.PacketHelper;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class Message extends Packet {
-    private String text;
+public class Transcript extends Packet {
+    private byte[] transcript;
 
-    protected Message() {}
-    public Message(String text) {
-        this.text = text;
+    protected Transcript() {}
+    public Transcript(byte[] transcript) {
+        this.transcript = transcript;
     }
 
-    public String getText() {return text;}
+    public byte[] getTranscript() {return transcript;}
 
     public void dispatch(PacketDispatcher dispatcher) {
         dispatcher.handle(this);
     }
 
     public void write(DataOutputStream dos) throws IOException {
-        dos.writeUTF(text);
+        PacketHelper.writeBytes(dos, transcript);
     }
 
     public void read(DataInputStream dis) throws IOException {
-        text = dis.readUTF();
+        transcript = PacketHelper.readBytes(dis);
     }
 }

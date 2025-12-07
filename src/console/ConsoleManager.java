@@ -43,7 +43,9 @@ public class ConsoleManager {
         }
     }
 
-    public static void logMaster(String text) {masterConsole.log(text);}
+    public static void logMaster(String text) {
+        if (masterConsole != null) masterConsole.log(text);
+    }
 
     // console creation ----------
     private static Console createMasterConsole() {
@@ -53,7 +55,7 @@ public class ConsoleManager {
         Console newConsole = new Console(components.inputField, components.outputArea);
         activeConsolePanels.put(newConsole, components.panel);
 
-        newConsole.log("Console startup | Master");
+        newConsole.log("Console startup | Master\n'cmd' for available commands\nTo ensure confidentiality, never share your private.key file");
         return newConsole;
     }
 
@@ -65,7 +67,7 @@ public class ConsoleManager {
             Console newConsole = new Console(components.inputField, components.outputArea, peer);
             activeConsolePanels.put(newConsole, components.panel);
 
-            newConsole.log("Console startup | " + name);
+            newConsole.log("Console startup | " + name + "\n'cmd' for available commands");
             return newConsole;
         };
 
@@ -117,6 +119,10 @@ public class ConsoleManager {
 
     // console deletion ----------
     protected static void removeConsole(Console console) {
-        tabs.remove(activeConsolePanels.get(console));
+        if (SwingUtilities.isEventDispatchThread()) {
+            tabs.remove(activeConsolePanels.get(console));
+        } else {
+            SwingUtilities.invokeLater(() -> tabs.remove(activeConsolePanels.get(console)));
+        }
     }
 }

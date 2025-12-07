@@ -3,12 +3,13 @@ package network;
 import console.Console;
 import console.ConsoleManager;
 import network.packets.Packet;
-import network.packets.PacketFactory;
+import security.SecurityManager;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.security.InvalidKeyException;
 
 public class Peer implements Runnable {
     private final Socket socket;
@@ -17,8 +18,9 @@ public class Peer implements Runnable {
 
     private final Console console;
     private final PacketDispatcher dispatcher = new PacketDispatcher(this);
+    private final SecurityManager securityManager;
 
-    protected Peer(Socket socket) {
+    protected Peer(Socket socket, boolean isHost) {
         console = ConsoleManager.createPeerConsole(socket.getRemoteSocketAddress().toString(), this);
         this.socket = socket;
 
@@ -29,13 +31,31 @@ public class Peer implements Runnable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        securityManager = new SecurityManager(this, isHost);
+        if (isHost) securityManager.init();
     }
+
+    public SecurityManager getSecurityManager() {return securityManager;}
 
     public synchronized void write(Packet packet) {
         try {
-            dos.writeUTF(packet.getId());
-            packet.write(dos);
-            dos.flush();
+            if (securityManager.canEncrypt()) {
+                try {
+                    PacketIO.writeEncrypted(dos, securityManager.getAesKey(), packet);
+                } catch (InvalidKeyException e) {
+                    throw new RuntimeException(e);
+                }
+
+            } else {
+                String id = packet.getId();
+
+                if (!"HandshakeInit".equals(id) && !"HandshakeResponse".equals(id)) {
+                    console.log("Attempted to write unencrypted packet: " + id);
+                } else {
+                    PacketIO.writePlain(dos, packet);
+                }
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -45,26 +65,28 @@ public class Peer implements Runnable {
     public void run() { // listen for packets
         while (true) {
             try {
-                String id = dis.readUTF();
-                Packet newPacket = PacketFactory.create(id);
-
-                if (newPacket == null) {
-                    disconnect("Unknown packet id received: " + id);
-                    return;
+                Packet packet;
+                if (securityManager.canEncrypt()) {
+                    try {
+                        packet = PacketIO.readEncrypted(dis, securityManager.getAesKey());
+                    } catch (InvalidKeyException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    packet = PacketIO.readPlain(dis);
                 }
 
-                newPacket.read(dis);
-                dispatcher.dispatch(newPacket);
+                dispatcher.dispatch(packet);
 
             } catch (IOException e) {
-                disconnect(e.toString());
+                disconnect("Connection was closed by the remote host: " + e);
                 return;
             }
         }
     }
 
     private boolean isDisconnected = false;
-    protected synchronized void disconnect(String reason) {
+    public synchronized void disconnect(String reason) {
         if (isDisconnected) return;
         isDisconnected = true;
 

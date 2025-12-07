@@ -1,7 +1,6 @@
 package network;
 
-import network.packets.Message;
-import network.packets.Packet;
+import network.packets.*;
 
 public class PacketDispatcher {
     private final Peer peer;
@@ -15,8 +14,29 @@ public class PacketDispatcher {
     }
 
     // packet handlers
-
     public void handle(Message packet) {
         peer.logConsole("MSG | " + packet.getText());
+    }
+
+    public void handle(HandshakeInit packet) {
+        peer.getSecurityManager().takeHandshakeInit(
+                packet.getDHPublicKey(),
+                packet.getIDPublicKey(),
+                packet.getP(),
+                packet.getG(),
+                packet.getNonce()
+        );
+    }
+
+    public void handle(HandshakeResponse packet) {
+        peer.getSecurityManager().takeHandshakeResponse(
+                packet.getDHPublicKey(),
+                packet.getIDPublicKey(),
+                packet.getNonce()
+        );
+    }
+
+    public void handle(Transcript packet) {
+        peer.getSecurityManager().takeTranscript(packet.getTranscript());
     }
 }

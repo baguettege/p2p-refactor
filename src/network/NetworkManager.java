@@ -14,7 +14,10 @@ public class NetworkManager {
     // inbound connections
     private static ServerSocket serverSocket;
     public static void startListening(int port) {
-        if (serverSocket != null && !serverSocket.isClosed()) return;
+        if (serverSocket != null && !serverSocket.isClosed()) {
+            ConsoleManager.logMaster("Already listening for inbound connections on port " + serverSocket.getLocalPort());
+            return;
+        }
 
         try {
             serverSocket = new ServerSocket(port);
@@ -25,12 +28,11 @@ public class NetworkManager {
                     try {
                         Socket clientSocket = serverSocket.accept();
                         ConsoleManager.logMaster("Connection received: " + clientSocket.getRemoteSocketAddress());
-                        Peer newPeer = new Peer(clientSocket);
+                        Peer newPeer = new Peer(clientSocket, true);
                         activePeers.add(newPeer);
                         new Thread(newPeer).start();
 
-                    } catch (SocketException e) {
-                        ConsoleManager.logMaster("Server socket closed, stopping accept thread");
+                    } catch (SocketException _) {
                         break;
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -64,7 +66,7 @@ public class NetworkManager {
     public static void connect(String ip, int port) {
         try {
             Socket socket = new Socket(ip, port);
-            Peer peer = new Peer(socket);
+            Peer peer = new Peer(socket, false);
             ConsoleManager.logMaster("Connected to: " + socket.getRemoteSocketAddress());
             activePeers.add(peer);
             new Thread(peer).start();

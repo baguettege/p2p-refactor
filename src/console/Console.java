@@ -3,6 +3,7 @@ package console;
 import console.inputhandlers.InputHandler;
 import console.inputhandlers.MasterInputHandler;
 import console.inputhandlers.PeerInputHandler;
+import files.FileManager;
 import network.Peer;
 
 import javax.swing.*;
@@ -39,6 +40,7 @@ public class Console {
         String fmtText = ConsoleUtil.formatLog(text);
         outputArea.append(fmtText + "\n");
         System.out.println(fmtText);
+        FileManager.writeToLogFile(fmtText);
     }
 
     public void close() {
