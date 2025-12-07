@@ -8,6 +8,9 @@ import java.math.BigInteger;
 import java.security.*;
 
 public class DHManager {
+    /// provies utility methods for diffie-hellman
+
+    // generates DH public & private keys by generating a prime and generator
     protected static KeyPair generateKeyPair(int keysize) {
         try {
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("DH");
@@ -19,6 +22,7 @@ public class DHManager {
         }
     }
 
+    // generates DH public & private keys by using a given prime and generator
     protected static KeyPair generateKeyPair(BigInteger p, BigInteger g) {
         try {
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("DH");
@@ -30,6 +34,7 @@ public class DHManager {
         }
     }
 
+    // computes a shared secret key (AES, derived from SHA-256) from own DH private key and peer's DH public key
     protected static SecretKeySpec computeSharedSecret(PrivateKey privateKey, PublicKey publicKey) {
         try {
             KeyAgreement keyAgreement = KeyAgreement.getInstance("DH");
@@ -47,6 +52,7 @@ public class DHManager {
         }
     }
 
+    // extracts prime and generator from a DH public key
     protected static DHParameters extractDHParameters(PublicKey publicKey) {
         DHPublicKey dhPublicKey = (DHPublicKey) publicKey;
         DHParameterSpec parameterSpec = dhPublicKey.getParams();

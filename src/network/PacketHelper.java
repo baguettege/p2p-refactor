@@ -8,7 +8,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 
 public class PacketHelper {
-    // writing
+    /// holds many utility methods for writing certain classes to data streams
+
+    /// writing
     public static void writePublicKey(DataOutputStream dos, PublicKey publicKey) throws IOException {
         byte[] bytes = publicKey.getEncoded();
         dos.writeInt(bytes.length);
@@ -26,7 +28,7 @@ public class PacketHelper {
         dos.write(bytes);
     }
 
-    // reading
+    /// reading
     public static PublicKey readPublicKey(DataInputStream dis, String algorithm) throws IOException {
         int length = dis.readInt();
         byte[] keyBytes = new byte[length];

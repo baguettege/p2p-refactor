@@ -7,6 +7,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class Message extends Packet {
+    /// holds simple message sent to the peer
+
     private String text;
 
     protected Message() {}

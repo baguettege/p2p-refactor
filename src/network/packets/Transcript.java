@@ -8,6 +8,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class Transcript extends Packet {
+    /// holds the transcript that a peer has built
+    /// is verified by the other peer
+    /// MUST be hashed AND signed by the peer sending it
+
     private byte[] transcript;
 
     protected Transcript() {}

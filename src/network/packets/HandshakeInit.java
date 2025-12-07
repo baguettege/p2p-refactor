@@ -10,6 +10,10 @@ import java.math.BigInteger;
 import java.security.PublicKey;
 
 public class HandshakeInit extends Packet {
+    /// used for the host (server-side) peer connection, which is sent to the other peer
+    /// holds data for computing DH shared secret
+    /// and building a transcript
+
     private PublicKey DHPublicKey;
     private PublicKey IDPublicKey;
     private BigInteger p;

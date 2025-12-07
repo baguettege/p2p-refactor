@@ -11,12 +11,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class IdentityKeyManager {
+    /// handles own long-term identity keys
+
     private static PublicKey IDPublicKey;
     private static PrivateKey IDPrivateKey;
 
     public static PublicKey getIDPublicKey() {return IDPublicKey;}
     public static PrivateKey getIDPrivateKey() {return IDPrivateKey;}
 
+    // gets the stored long-term ID keys from the user's files
+    // if they do not exist, or only 1 does, then new ones are generated to replace them
     public static void init() {
         byte[] encodedPublicKey;
         byte[] encodedPrivateKey;
@@ -45,6 +49,7 @@ public class IdentityKeyManager {
         }
     }
 
+    // checks if a given ID public key is in the user's keys/trusted-keys/ directory
     public static boolean isIDKeyTrusted(PublicKey key) {
         byte[] encodedKey = key.getEncoded();
         ArrayList<byte[]> allEncodedTrustedKeys = FileManager.getAllEncodedTrustedKeys();

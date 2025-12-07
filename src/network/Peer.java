@@ -12,6 +12,9 @@ import java.net.Socket;
 import java.security.InvalidKeyException;
 
 public class Peer implements Runnable {
+    /// this object is made every time a connection to a peer is made over a socket
+    /// holds necessary info like data streams, sockets, console
+
     private final Socket socket;
     private final DataOutputStream dos;
     private final DataInputStream dis;
@@ -20,11 +23,13 @@ public class Peer implements Runnable {
     private final PacketDispatcher dispatcher = new PacketDispatcher(this);
     private final SecurityManager securityManager;
 
+    // isHost is true when the connection was inbound (i.e. server-side)
     protected Peer(Socket socket, boolean isHost) {
         console = ConsoleManager.createPeerConsole(socket.getRemoteSocketAddress().toString(), this);
         this.socket = socket;
 
         try {
+            socket.setKeepAlive(true);
             dos = new DataOutputStream(socket.getOutputStream());
             dis = new DataInputStream(socket.getInputStream());
 
@@ -38,6 +43,9 @@ public class Peer implements Runnable {
 
     public SecurityManager getSecurityManager() {return securityManager;}
 
+    // writes a packet to the data output stream
+    // will encrypt all packets
+    // only allows plain text HandshakeInit and HandshakeResponse packets to be written, as these are safe over an unsafe network
     public synchronized void write(Packet packet) {
         try {
             if (securityManager.canEncrypt()) {
@@ -61,9 +69,10 @@ public class Peer implements Runnable {
         }
     }
 
+    // listens for packets sent by the peer, and decrypts them if an aes key was computed
+    // begins a countdown for the handshake, if not completed then disconnects (either took too long or not a real person)
     @Override
-    public void run() { // listen for packets
-
+    public void run() {
         // wait for handshake timeout
         new Thread(() -> {
             try {
@@ -99,6 +108,7 @@ public class Peer implements Runnable {
         }
     }
 
+    // closes the socket to the peer and closes the console
     private boolean isDisconnected = false;
     public synchronized void disconnect(String reason) {
         if (isDisconnected) return;

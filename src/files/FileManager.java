@@ -10,6 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileManager {
+    /// creates the necessary files for the program
+    /// stores the user's long-term identity keys
+    /// and trusted peer identity keys
+    /// can log to the session log file, which all consoles log to
+
     private static final Path mainDir = Path.of(System.getProperty("user.home"), "Documents", "p2p-refactor");
     private static final Path keyDir = mainDir.resolve("keys");
     private static final Path trustedKeysDir = keyDir.resolve("trusted-keys");
@@ -17,6 +22,7 @@ public class FileManager {
 
     public static String getMainDir() {return mainDir.toString();}
 
+    // creates necessary directories
     public static void init() {
         try {
             List<Path> dirs = List.of(
@@ -36,6 +42,7 @@ public class FileManager {
         }
     }
 
+    // writes a log from the console to the session files
     public static synchronized void writeToLogFile(String text) {
         try (BufferedWriter writer = Files.newBufferedWriter(
                 logFile,
@@ -50,12 +57,14 @@ public class FileManager {
         }
     }
 
+    // checks if public.key and private.key exist in the main directories /key/ dir
     public static boolean identityKeysExist() {
         Path publicKeyFile = keyDir.resolve("public.key");
         Path privateKeyFile = keyDir.resolve("private.key");
         return Files.exists(publicKeyFile) && Files.exists(privateKeyFile);
     }
 
+    // deletes public.key and private.key and sets it to the given encoded keys
     public static void setIdentityKeys(byte[] encodedPublicKey, byte[] encodedPrivateKey) {
         Path publicKeyFile = keyDir.resolve("public.key");
         Path privateKeyFile = keyDir.resolve("private.key");
@@ -77,10 +86,10 @@ public class FileManager {
         }
     }
 
+    // gets the byte arrays for the users long-term identity keys
     public static byte[] getEncodedPublicKey() {
         return getEncodedKey("public");
     }
-
     public static byte[] getEncodedPrivateKey() {
         return getEncodedKey("private");
     }
@@ -96,6 +105,7 @@ public class FileManager {
         }
     }
 
+    // gets all the byte arrays for all the .key files (trusted keys) in mainDir/keys/trusted-keys/
     public static ArrayList<byte[]> getAllEncodedTrustedKeys() {
         ArrayList<byte[]> list = new ArrayList<>();
 

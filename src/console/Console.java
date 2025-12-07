@@ -9,8 +9,12 @@ import network.Peer;
 import javax.swing.*;
 
 public class Console {
+    /// simply a console
+    /// holds a JTextArea for outputting logs
+    /// holds a JTextField for user input, then passes it onto the given InputHandler
+    /// always logs to the sessions log file in FileManager
+
     private JTextArea outputArea;
-    private InputHandler inputHandler;
 
     protected Console(JTextField inputField, JTextArea outputArea) { // master console
         setDefaults(inputField, outputArea, new MasterInputHandler());
@@ -33,7 +37,6 @@ public class Console {
             inputHandler.handle(text);
         });
 
-        this.inputHandler = inputHandler;
     }
 
     public void log(String text) {

@@ -6,6 +6,11 @@ import network.packets.Message;
 import java.util.Arrays;
 
 public class PeerInputHandler implements InputHandler {
+    /// input handler for the Peer console
+    /// one is used for every connection to a peer
+    /// takes a command in handle(String text), finds the corresponding command and executes it
+    /// will output an error if the input is invalid
+
     private final Peer peer;
 
     private void invalidInput(String reason) {

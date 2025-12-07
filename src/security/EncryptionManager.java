@@ -14,6 +14,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 public class EncryptionManager {
+    /// provides methods for encrypting and decrypting byte arrays
+
+    // encrypts a byte array using a secret key, with AES/GCM/NoPadding
+    // uses an iv of length 12
+    // returned format [iv, 12 bytes][cipherText bytes]
     public static byte[] encrypt(byte[] plainText, SecretKeySpec secretKeySpec) throws InvalidKeyException {
         byte[] iv = SecurityUtil.generateNonce(12);
 
@@ -34,6 +39,8 @@ public class EncryptionManager {
         }
     }
 
+    // decrypts a byte array with the form [iv, 12 bytes][cipherText bytes]
+    // returns the plainText bytes
     public static byte[] decrypt(byte[] cipherText, SecretKeySpec secretKeySpec) throws InvalidKeyException {
         if (cipherText.length < 12) throw new IllegalArgumentException("Cipher text too short; unable to decrypt");
 

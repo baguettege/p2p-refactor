@@ -3,6 +3,8 @@ package network;
 import network.packets.*;
 
 public class PacketDispatcher {
+    /// takes a packet sent by a peer and dispatches it to the corresponding method so that it can be dealt with
+
     private final Peer peer;
 
     protected PacketDispatcher(Peer peer) {

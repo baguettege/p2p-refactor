@@ -9,6 +9,10 @@ import java.io.IOException;
 import java.security.PublicKey;
 
 public class HandshakeResponse extends Packet {
+    /// used for the non-host (client-side) peer connection, which is sent to the other peer
+    /// holds data for computing DH shared secret
+    /// and building a transcript
+
     private PublicKey DHPublicKey;
     private PublicKey IDPublicKey;
     private byte[] nonce;

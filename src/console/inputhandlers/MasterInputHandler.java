@@ -4,6 +4,10 @@ import console.ConsoleManager;
 import network.NetworkManager;
 
 public class MasterInputHandler implements InputHandler {
+    /// input handler for the Master console
+    /// takes a command in handle(String text), finds the corresponding command and executes it
+    /// will output an error if the input is invalid
+
     private void invalidInput(String reason) {
         ConsoleManager.logMaster("Invalid cmd: " + reason);
     }

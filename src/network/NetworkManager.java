@@ -9,9 +9,14 @@ import java.net.SocketException;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class NetworkManager {
-    private static CopyOnWriteArrayList<Peer> activePeers = new CopyOnWriteArrayList<>();
+    /// manages the server socket that listens for inbound connections from peers
+    /// and outbound connections to other peers
+    /// once a connection is made, a Peer object is made
 
-    // inbound connections
+    private static final CopyOnWriteArrayList<Peer> activePeers = new CopyOnWriteArrayList<>();
+
+    /// inbound connections
+    // opens a server socket that listens for inbound connections, once one is made, a Peer object is created
     private static ServerSocket serverSocket;
     public static void startListening(int port) {
         if (serverSocket != null && !serverSocket.isClosed()) {
@@ -46,6 +51,7 @@ public class NetworkManager {
         }
     }
 
+    // closes the server socket that was opened
     public static void stopListening() {
         if (serverSocket == null || serverSocket.isClosed()) {
             ConsoleManager.logMaster("Already not listening for inbound connections");
@@ -62,7 +68,8 @@ public class NetworkManager {
         }
     }
 
-    // outbound connections
+    /// outbound connections
+    // attempts to connect to a peer, if successfully, Peer object is made
     public static void connect(String ip, int port) {
         try {
             Socket socket = new Socket(ip, port);

@@ -10,10 +10,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 public class ConsoleManager {
+    /// manages all consoles
+    /// init() creates a Master console and the Swing gui
+    /// a peer console is made every connection to a peer made
+
     private static JTabbedPane tabs;
     private static final ConcurrentHashMap<Console, JPanel> activeConsolePanels = new ConcurrentHashMap<>();
     private static Console masterConsole;
 
+    // creates the Swing gui and creates a master console
     public static void init() {
         if (masterConsole != null) return;
 
@@ -44,11 +49,13 @@ public class ConsoleManager {
         }
     }
 
+    // logs the master console
     public static void logMaster(String text) {
         if (masterConsole != null) masterConsole.log(text);
     }
 
-    // console creation ----------
+    /// console creation ----------
+    // creates a single master console, only 1 can be made
     private static Console createMasterConsole() {
         ConsoleComponents components = createConsoleComponents();
         tabs.add("Master", components.panel);
@@ -64,6 +71,7 @@ public class ConsoleManager {
         return newConsole;
     }
 
+    // creates a peer console, one is made for every Peer connection made
     public static Console createPeerConsole(String name, Peer peer) {
         Supplier<Console> supplier = () -> {
             ConsoleComponents components = createConsoleComponents();
@@ -88,6 +96,7 @@ public class ConsoleManager {
         return holder[0];
     }
 
+    // creates the Swing gui components for each console
     private static ConsoleComponents createConsoleComponents() {
         JPanel panel = new JPanel(new BorderLayout());
         JTextField inputField = new JTextField();
@@ -124,7 +133,8 @@ public class ConsoleManager {
         }
     }
 
-    // console deletion ----------
+    /// console deletion ----------
+    // removes the console from the JTabbedPane in the main gui
     protected static void removeConsole(Console console) {
         if (SwingUtilities.isEventDispatchThread()) {
             tabs.remove(activeConsolePanels.get(console));

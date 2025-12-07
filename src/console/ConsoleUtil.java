@@ -3,6 +3,8 @@ package console;
 import util.TimeUtil;
 
 public class ConsoleUtil {
+    /// simply util for consoles
+
     private static final String INDENT = " ".repeat(11);
     protected static String formatLog(String text) {
         if (text.isBlank()) return TimeUtil.timeNow() + " | " + text;

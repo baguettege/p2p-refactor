@@ -14,6 +14,10 @@ import java.security.PublicKey;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SecurityManager {
+    /// manages everything security related for each peer connections
+    /// e.g. computing shared secrets using FFDHE4096
+    /// and handles creating & verifying transcripts made during the exchange
+
     private final Peer peer;
     private final boolean isHost;
 
@@ -33,6 +37,8 @@ public class SecurityManager {
         this.isHost = isHost;
     }
 
+    // generates a DH key pair and sends the prime and generator to the peer
+    // along with own ID public key & a nonce for transcript
     public void init() { // host side
         if (!isHost) return;
 
@@ -52,6 +58,9 @@ public class SecurityManager {
         ));
     }
 
+
+    // generates a DH key pair from the peer's prime and generator
+    // along with own ID public key & a nonce for transcript
     private void init(BigInteger p, BigInteger g) { // non host side
         if (isHost) return;
 
@@ -65,6 +74,9 @@ public class SecurityManager {
         ));
     }
 
+    // checks if the peer's ID public key is trusted, disconnects if not
+    // computes a shared secret AES key
+    // builds a hashed transcript, then signs it and sends it to the peer
     public void takeHandshakeResponse( // host side
                                        PublicKey DHPublicKey,
                                        PublicKey IDPublicKey,
@@ -99,6 +111,9 @@ public class SecurityManager {
         }
     }
 
+    // checks if the peer's ID public key is trusted, disconnects if not
+    // computes a shared secret AES key
+    // builds a hashed transcript, then signs it and sends it to the peer
     public void takeHandshakeInit( // non host side
             PublicKey DHPublicKey,
             PublicKey IDPublicKey,
@@ -136,6 +151,10 @@ public class SecurityManager {
         }
     }
 
+    // takes a hashed signature transcript from the peer & verifies it
+    // if verified, then no mitm has occurred
+    // if not verified, then mitm is most likely occuring, so disconnects
+    // marks the handshake as complete, transferring data is safe now
     public void takeTranscript(byte[] signature) {
         try {
             boolean verified = TranscriptManager.verifyTranscripts(
@@ -165,6 +184,7 @@ public class SecurityManager {
         handshakeCompleted.set(true);
     }
 
+    // is handshake completed? peer checks after a timeout and if not, then disconnects
     private final AtomicBoolean handshakeCompleted = new AtomicBoolean(false);
     public boolean isHandshakeCompleted() {return handshakeCompleted.get();}
     private final int HANDSHAKE_TIMEOUT_MILLIS = 10000;
